@@ -1,0 +1,18 @@
+# Servidor Web / API
+fastapi>=0.111.0
+uvicorn>=0.30.0
+pydantic>=2.7.0
+python-dotenv>=1.0.1
+
+# Orquestación RAG y LLM Local (Ollama)
+langchain>=0.2.0
+langchain-community>=0.2.0
+langchain-core>=0.2.0
+langchain-ollama>=0.1.0
+langchain-chroma>=0.1.0
+
+# Base de Datos Vectorial
+chromadb>=0.5.0
+
+# Ingesta de Documentos
+pypdf>=4.2.0
