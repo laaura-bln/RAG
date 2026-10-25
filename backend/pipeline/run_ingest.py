@@ -1,51 +1,84 @@
 # pipeline/run_ingest.py
-import sys
 import os
+os.environ["USER_AGENT"] = "AnticipaBot/1.0"
 
-# Añadir la raíz del proyecto al sys.path para poder importar módulos de 'app'
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+from typing import List
+from langchain_community.document_loaders import PyPDFLoader, TextLoader, WebBaseLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from app.db.chroma import get_vector_store
 
-def run_ingestion():
-    print("Iniciando la ingesta de documentos en ChromaDB (modo local)...")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
+
+PRADO_URLS = [
+    "https://www.museodelprado.es/visita-el-museo",
+    "https://www.museodelprado.es/coleccion/obras-de-arte",
+]
+
+def load_local_documents() -> List[Document]:
+    """Carga archivos PDF y TXT dentro de la carpeta /data."""
+    documents = []
+    if not os.path.exists(DATA_DIR):
+        os.makedirs(DATA_DIR)
+        print(f"Carpeta creada: {DATA_DIR}. Deposita aquí tus archivos PDF o TXT.")
+        return documents
+
+    for file in os.listdir(DATA_DIR):
+        file_path = os.path.join(DATA_DIR, file)
+        if file.endswith(".pdf"):
+            print(f"Procesando PDF: {file}")
+            loader = PyPDFLoader(file_path)
+            documents.extend(loader.load())
+        elif file.endswith(".txt"):
+            print(f"Procesando TXT: {file}")
+            loader = TextLoader(file_path, encoding="utf-8")
+            documents.extend(loader.load())
+
+    return documents
+
+def load_web_documents(urls: List[str]) -> List[Document]:
+    """Carga y limpia el contenido de una lista de páginas web."""
+    documents = []
+    if not urls:
+        return documents
+
+    print(f"Cargando {len(urls)} páginas web...")
+    for url in urls:
+        try:
+            loader = WebBaseLoader(url)
+            docs = loader.load()
+            documents.extend(docs)
+            print(f"Página web cargada con éxito: {url}")
+        except Exception as e:
+            print(f"Error cargando la URL {url}: {e}")
+
+    return documents
+
+def run_ingestion(urls: List[str] = None):
+    """Ejecuta la ingesta completa (PDF, TXT y Web) hacia ChromaDB."""
+    all_docs = []
     
-    # 1. Documentos de prueba (simulando circulares y notas informativas)
-    sample_documents = [
-        Document(
-            page_content=(
-                "Excursión al Museo de Ciencias: El próximo viernes 20 de noviembre de 2026 "
-                "iremos de excursión. La salida será a las 9:00 de la mañana desde la puerta principal "
-                "del centro. Regresaremos a las 17:00 de la tarde. Es necesario llevar comida, agua "
-                "y calzado cómodo."
-            ),
-            metadata={"fuente": "circular_01.pdf", "categoria": "excursiones"}
-        ),
-        Document(
-            page_content=(
-                "Cambio de horario en el taller de cocina: A partir de la semana que viene, "
-                "el taller de cocina se impartirá los martes a las 11:00 de la mañana en lugar de los "
-                "jueves. El taller tendrá lugar en el aula 3."
-            ),
-            metadata={"fuente": "nota_cocina.pdf", "categoria": "talleres"}
-        ),
-        Document(
-            page_content=(
-                "Norma sobre el menú del comedor: El menú especial de fruta fresca estará "
-                "disponible todos los días al finalizar el almuerzo, a las 13:30."
-            ),
-            metadata={"fuente": "comedor_info.pdf", "categoria": "comedor"}
-        )
-    ]
+    local_docs = load_local_documents()
+    all_docs.extend(local_docs)
     
-    # 2. Conectar a ChromaDB e indexar los documentos
+    if urls:
+        web_docs = load_web_documents(urls)
+        all_docs.extend(web_docs)
+    
+    if not all_docs:
+        print("No se encontraron documentos ni URLs para ingerir.")
+        return
+
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=600,
+        chunk_overlap=100
+    )
+    chunks = text_splitter.split_documents(all_docs)
+    print(f"Total de fragmentos (chunks) creados: {len(chunks)}")
+
     vector_store = get_vector_store()
-    
-    print(f"Guardando {len(sample_documents)} documentos en la base de datos vectorial...")
-    vector_store.add_documents(sample_documents)
-    
-    print("Ingesta completada con éxito. La base de datos local está lista.")
+    vector_store.add_documents(chunks)
+    print("Ingesta completada con éxito en ChromaDB.")
 
 if __name__ == "__main__":
-    run_ingestion()
+    run_ingestion(urls=PRADO_URLS)

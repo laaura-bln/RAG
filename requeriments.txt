@@ -14,5 +14,7 @@ langchain-chroma>=0.1.0
 # Base de Datos Vectorial
 chromadb>=0.5.0
 
-# Ingesta de Documentos
+# Ingesta Web y Documentos
+beautifulsoup4>=4.12.0
+requests>=2.32.0
 pypdf>=4.2.0

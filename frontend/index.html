@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANTICIPA - Asistente</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main class="container">
+    <h1>ANTICIPA</h1>
+    
+    <div class="search-box">
+      <input type="text" id="questionInput" placeholder="Escribe tu pregunta aquí..." />
+      <button id="askBtn">Preguntar</button>
+    </div>
+
+    <div id="loading" class="hidden">Cargando respuesta...</div>
+
+    <div id="resultBox" class="result-box hidden">
+      <strong>Respuesta:</strong>
+      <p id="answerText"></p>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
