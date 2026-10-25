@@ -3,25 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ANTICIPA - Asistente</title>
+  <title>ANTICIPA - Panel Principal</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <main class="container">
     <h1>ANTICIPA</h1>
-    
-    <div class="search-box">
-      <input type="text" id="questionInput" placeholder="Escribe tu pregunta aquí..." />
-      <button id="askBtn">Preguntar</button>
-    </div>
 
-    <div id="loading" class="hidden">Cargando respuesta...</div>
+    <!-- Ingestar URL -->
+    <section class="section-box">
+      <h2>1. Ingerir Página Web</h2>
+      <div class="input-group">
+        <input type="url" id="urlInput" placeholder="https://ejemplo.com/pagina" />
+        <button id="ingestUrlBtn">Ingerir Web</button>
+      </div>
+      <div id="urlStatus" class="status-msg hidden"></div>
+    </section>
 
-    <div id="resultBox" class="result-box hidden">
-      <strong>Respuesta:</strong>
-      <p id="answerText"></p>
-    </div>
+    <!-- Ingestar PDF -->
+    <section class="section-box">
+      <h2>2. Ingerir Documento PDF</h2>
+      <div class="input-group">
+        <input type="file" id="pdfInput" accept=".pdf" />
+        <button id="ingestPdfBtn">Subir PDF</button>
+      </div>
+      <div id="pdfStatus" class="status-msg hidden"></div>
+    </section>
+
+    <!-- Ingestar Excel -->
+    <section class="section-box">
+      <h2>3. Ingerir Excel (.xlsx, .xls)</h2>
+      <div class="input-group">
+        <input type="file" id="excelInput" accept=".xlsx, .xls" />
+        <button id="ingestExcelBtn">Subir Excel</button>
+      </div>
+      <div id="excelStatus" class="status-msg hidden"></div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Asistente / Preguntas -->
+    <section class="section-box">
+      <h2>Hacer Pregunta</h2>
+      <div class="input-group">
+        <input type="text" id="questionInput" placeholder="Escribe tu pregunta aquí..." />
+        <button id="askBtn">Preguntar</button>
+      </div>
+
+      <div id="loading" class="status-msg hidden">Cargando respuesta...</div>
+
+      <div id="resultBox" class="result-box hidden">
+        <strong>Respuesta:</strong>
+        <p id="answerText"></p>
+      </div>
+    </section>
+
   </main>
 
   <script src="app.js"></script>

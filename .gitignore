@@ -1,2 +1,17 @@
+# Entorno virtual
+.venv/
+venv/
+env/
+
+# Base de datos local
+chroma_db/
+*.sqlite3
+
+# Archivos de entorno y caché de Python
 .env
-.venv
+__pycache__/
+*.pyc
+
+# IDEs
+.vscode/
+.idea/
