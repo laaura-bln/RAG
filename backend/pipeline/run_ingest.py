@@ -10,11 +10,6 @@ from app.db.chroma import get_vector_store
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
-PRADO_URLS = [
-    "https://www.museodelprado.es/visita-el-museo",
-    "https://www.museodelprado.es/coleccion/obras-de-arte",
-]
-
 def load_local_documents() -> List[Document]:
     """Carga archivos PDF y TXT dentro de la carpeta /data."""
     documents = []
@@ -54,16 +49,12 @@ def load_web_documents(urls: List[str]) -> List[Document]:
 
     return documents
 
-def run_ingestion(urls: List[str] = None):
+def run_ingestion():
     """Ejecuta la ingesta completa (PDF, TXT y Web) hacia ChromaDB."""
     all_docs = []
     
     local_docs = load_local_documents()
     all_docs.extend(local_docs)
-    
-    if urls:
-        web_docs = load_web_documents(urls)
-        all_docs.extend(web_docs)
     
     if not all_docs:
         print("No se encontraron documentos ni URLs para ingerir.")
@@ -81,4 +72,4 @@ def run_ingestion(urls: List[str] = None):
     print("Ingesta completada con éxito en ChromaDB.")
 
 if __name__ == "__main__":
-    run_ingestion(urls=PRADO_URLS)
+    run_ingestion()

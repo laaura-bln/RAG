@@ -12,14 +12,12 @@ from pipeline.run_ingest import load_web_documents, get_vector_store, RecursiveC
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents import Document
 
-# 1. Instancia de FastAPI
 app = FastAPI(
     title="ANTICIPA API",
     description="Backend RAG adaptado a Lectura Fácil para accesibilidad cognitiva.",
     version="1.0.0"
 )
 
-# 2. Configurar CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,9 +26,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 3. Modelos Pydantic
 class QuestionRequest(BaseModel):
-    question: str = Field(..., json_schema_extra={"example": "¿A qué hora sale la excursión del viernes?"})
+    question: str
 
 class AnswerResponse(BaseModel):
     answer: str
@@ -38,7 +35,6 @@ class AnswerResponse(BaseModel):
 class IngestRequest(BaseModel):
     url: str
 
-# 4. Endpoints
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
     return {"status": "ok", "service": "ANTICIPA API"}
